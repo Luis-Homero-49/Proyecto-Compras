@@ -1,0 +1,1 @@
+const db = require('./db'); db.query('ALTER TABLE shopping_list_items ADD COLUMN estimated_quantity NUMERIC(10,3) DEFAULT 1, ADD COLUMN real_quantity NUMERIC(10,3) DEFAULT 1').then(() => { console.log('Altered'); process.exit(0); }).catch(console.error);

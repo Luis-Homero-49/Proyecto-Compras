@@ -1,0 +1,12 @@
+{
+  "name": "proyecto-compras",
+  "version": "1.0.0",
+  "description": "Tu Ayudante de Compras Inteligente",
+  "scripts": {
+    "start": "node backend/server.js",
+    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
