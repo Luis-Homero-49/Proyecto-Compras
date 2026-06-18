@@ -336,7 +336,6 @@ const CategoriesManager = ({ onReturn }) => {
         )}
       </div>
     </div>
-    </div>
   );
 };
 

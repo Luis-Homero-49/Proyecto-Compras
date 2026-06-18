@@ -56,7 +56,12 @@ app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email y password requeridos' });
   try {
-    const { rows } = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (!result || !result.rows) {
+      console.error('Error crítico DB en login. Result no tiene properties:', result);
+      return res.status(500).json({ error: 'Error de conexión con la base de datos' });
+    }
+    const rows = result.rows;
     if (rows.length === 0) return res.status(401).json({ error: 'Credenciales inválidas' });
     
     const valid = await bcrypt.compare(password, rows[0].password_hash);
@@ -66,6 +71,7 @@ app.post('/api/auth/login', async (req, res) => {
     const token = jwt.sign({ id: rows[0].id, email: rows[0].email, role: rows[0].role, plan_type: rows[0].plan_type, family_owner_id: rows[0].family_owner_id }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, user: { id: rows[0].id, email: rows[0].email, role: rows[0].role, plan_type: rows[0].plan_type, family_owner_id: rows[0].family_owner_id } });
   } catch (err) {
+    console.error('Error atrapado en login:', err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
