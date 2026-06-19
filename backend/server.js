@@ -36,18 +36,36 @@ const authenticateToken = (req, res, next) => {
 
 // --- AUTH ENDPOINTS ---
 app.post('/api/auth/register', async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Email y password requeridos' });
+  const { email, password, alias, planType } = req.body;
+  if (!email || !password || !alias) return res.status(400).json({ error: 'Email, password y alias requeridos' });
+  
   try {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
+    
+    const countRes = await db.query('SELECT COUNT(*) FROM users');
+    const userCount = parseInt(countRes.rows[0].count);
+    
+    let role = 'user';
+    let finalPlan = planType;
+    
+    if (userCount === 0) {
+      role = 'admin';
+      finalPlan = 'pro';
+    } else {
+      if (!planType || !['basic', 'pro', 'familiar'].includes(planType)) {
+        return res.status(400).json({ error: 'Debe seleccionar un plan válido' });
+      }
+    }
+
     const { rows } = await db.query(
-      'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, role',
-      [email, hash]
+      'INSERT INTO users (email, password_hash, role, plan_type, alias) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, role, plan_type, alias',
+      [email, hash, role, finalPlan, alias]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
     if (err.code === '23505') return res.status(400).json({ error: 'El email ya está en uso' });
+    console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -68,8 +86,8 @@ app.post('/api/auth/login', async (req, res) => {
     if (!valid) return res.status(401).json({ error: 'Credenciales inválidas' });
     if (rows[0].is_active === false) return res.status(401).json({ error: 'Cuenta desactivada. Contacte al administrador.' });
     
-    const token = jwt.sign({ id: rows[0].id, email: rows[0].email, role: rows[0].role, plan_type: rows[0].plan_type, family_owner_id: rows[0].family_owner_id }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: rows[0].id, email: rows[0].email, role: rows[0].role, plan_type: rows[0].plan_type, family_owner_id: rows[0].family_owner_id } });
+    const token = jwt.sign({ id: rows[0].id, email: rows[0].email, role: rows[0].role, plan_type: rows[0].plan_type, family_owner_id: rows[0].family_owner_id, alias: rows[0].alias }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token, user: { id: rows[0].id, email: rows[0].email, role: rows[0].role, plan_type: rows[0].plan_type, family_owner_id: rows[0].family_owner_id, alias: rows[0].alias } });
   } catch (err) {
     console.error('Error atrapado en login:', err);
     res.status(500).json({ error: 'Error del servidor' });

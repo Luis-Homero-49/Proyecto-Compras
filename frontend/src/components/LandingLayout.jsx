@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Check, X } from 'lucide-react';
 
-const LandingLayout = ({ children }) => {
+const LandingLayout = ({ children, onPlanSelected }) => {
   const [showPlans, setShowPlans] = useState(false);
 
   return (
@@ -91,6 +91,13 @@ const LandingLayout = ({ children }) => {
                   <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Check size={18} color="#10b981" /> <span>Acceso a productos globales</span></li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Check size={18} color="#10b981" /> <span>Gestión de presupuestos básica</span></li>
                 </ul>
+                <button 
+                  onClick={() => { setShowPlans(false); if(onPlanSelected) onPlanSelected('basic'); }}
+                  className="btn btn-outline" 
+                  style={{ width: '100%', marginTop: '16px' }}
+                >
+                  Seleccionar Básico
+                </button>
               </div>
 
               {/* Pro */}
@@ -105,6 +112,13 @@ const LandingLayout = ({ children }) => {
                   <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Check size={18} color="#10b981" /> <span>Sin anuncios</span></li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Check size={18} color="#10b981" /> <span>Exportación a PDF/Excel</span></li>
                 </ul>
+                <button 
+                  onClick={() => { setShowPlans(false); if(onPlanSelected) onPlanSelected('pro'); }}
+                  className="btn btn-primary" 
+                  style={{ width: '100%', marginTop: '16px' }}
+                >
+                  Seleccionar Pro
+                </button>
               </div>
 
               {/* Familiar */}
@@ -117,6 +131,13 @@ const LandingLayout = ({ children }) => {
                   <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Check size={18} color="#10b981" /> <span>Hasta 5 usuarios sincronizados</span></li>
                   <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Check size={18} color="#10b981" /> <span>Listas compartidas en tiempo real</span></li>
                 </ul>
+                <button 
+                  onClick={() => { setShowPlans(false); if(onPlanSelected) onPlanSelected('familiar'); }}
+                  className="btn btn-outline" 
+                  style={{ width: '100%', marginTop: '16px', borderColor: '#f59e0b', color: '#d97706' }}
+                >
+                  Seleccionar Familiar
+                </button>
               </div>
             </div>
 

@@ -54,7 +54,7 @@ function MainApp() {
               <button onClick={toggleLang} className="btn btn-outline" style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Globe size={16} /> {lang.toUpperCase()}
               </button>
-              <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{user?.email}</span>
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 'bold' }}>{user?.alias || user?.email}</span>
               <button onClick={logout} className="btn btn-outline" style={{ padding: '6px 12px', borderColor: '#fee2e2', color: '#ef4444' }}>
                 <LogOut size={16} style={{ marginRight: '6px' }} /> {t('app.logout')}
               </button>
@@ -130,7 +130,7 @@ function MainApp() {
         {mainTab === null && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', textAlign: 'center' }}>
             <ShoppingCart size={64} color="var(--accent-primary)" style={{ opacity: 0.2, marginBottom: '24px' }} />
-            <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '16px', color: 'var(--text-primary)' }}>¡Hola, {user?.email}!</h2>
+            <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '16px', color: 'var(--text-primary)' }}>¡Hola, {user?.alias || user?.email}!</h2>
             <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>Selecciona una opción del menú superior para comenzar.</p>
           </div>
         )}
@@ -147,16 +147,17 @@ function MainApp() {
 }
 
 function AppContent() {
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
   const [view, setView] = useState('login'); // 'login', 'register', 'forgot', 'reset'
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   if (!token) {
-    if (view === 'register') return <LandingLayout><Register onSwitchToLogin={() => setView('login')} /></LandingLayout>;
+    if (view === 'register') return <LandingLayout onPlanSelected={(p) => { setSelectedPlan(p); setView('register'); }}><Register planType={selectedPlan} onSwitchToLogin={() => setView('login')} /></LandingLayout>;
     if (view === 'forgot') return <LandingLayout><ForgotPassword onSwitchToLogin={() => setView('login')} /></LandingLayout>;
     if (view === 'reset') return <LandingLayout><ResetPassword onSwitchToLogin={() => setView('login')} /></LandingLayout>;
     
     return (
-      <LandingLayout>
+      <LandingLayout onPlanSelected={(p) => { setSelectedPlan(p); setView('register'); }}>
         <Login 
           onSwitchToRegister={() => setView('register')} 
           onSwitchToForgot={() => setView('forgot')} 

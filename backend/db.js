@@ -28,7 +28,7 @@ const createTables = async () => {
     ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
     ALTER TABLE users ADD COLUMN IF NOT EXISTS plan_type VARCHAR(20) DEFAULT 'basic';
     ALTER TABLE users ADD COLUMN IF NOT EXISTS family_owner_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
-    UPDATE users SET role = 'admin' WHERE id = 1;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS alias VARCHAR(100);
 
     CREATE TABLE IF NOT EXISTS password_resets (
       id SERIAL PRIMARY KEY,

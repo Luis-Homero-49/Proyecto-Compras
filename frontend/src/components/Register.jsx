@@ -3,8 +3,9 @@ import { AuthContext } from '../context/AuthContext';
 import { UserPlus, Mail, Lock, ArrowRight } from 'lucide-react';
 import { API_URL } from '../config';
 
-const Register = ({ onSwitchToLogin }) => {
+const Register = ({ onSwitchToLogin, planType }) => {
   const { login } = useContext(AuthContext);
+  const [alias, setAlias] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,7 +20,7 @@ const Register = ({ onSwitchToLogin }) => {
       const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ alias, email, password, planType })
       });
       const data = await res.json();
       
@@ -54,20 +55,37 @@ const Register = ({ onSwitchToLogin }) => {
         </div>
 
         {error && <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '8px', marginBottom: '24px', textAlign: 'center' }}>{error}</div>}
+        {planType ? (
+          <div style={{ padding: '8px', backgroundColor: '#e0f2fe', color: '#0284c7', borderRadius: '8px', marginBottom: '16px', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold' }}>
+            Plan seleccionado: {planType.toUpperCase()}
+          </div>
+        ) : (
+          <div style={{ padding: '16px', backgroundColor: '#fffbeb', color: '#b45309', borderRadius: '8px', marginBottom: '24px', textAlign: 'center', border: '1px solid #fde68a' }}>
+            <strong>Atención:</strong> Para registrarte, primero debes hacer clic en <strong>"Ver Planes de Uso"</strong> en la pantalla principal y elegir un plan.
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {planType && (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div>
+            <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Nombre o Alias</label>
+            <div style={{ position: 'relative' }}>
+              <UserPlus size={20} color="var(--text-secondary)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input type="text" value={alias} onChange={(e) => setAlias(e.target.value)} required className="input-field" style={{ paddingLeft: '40px' }} placeholder="Tu nombre" />
+            </div>
+          </div>
           <div>
             <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Correo Electrónico</label>
             <div style={{ position: 'relative' }}>
               <Mail size={20} color="var(--text-secondary)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="input" style={{ paddingLeft: '40px' }} placeholder="tu@correo.com" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="input-field" style={{ paddingLeft: '40px' }} placeholder="tu@correo.com" />
             </div>
           </div>
           <div>
             <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Contraseña</label>
             <div style={{ position: 'relative' }}>
               <Lock size={20} color="var(--text-secondary)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input" style={{ paddingLeft: '40px' }} placeholder="Mínimo 6 caracteres" minLength="6" />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input-field" style={{ paddingLeft: '40px' }} placeholder="Mínimo 6 caracteres" minLength="6" />
             </div>
           </div>
           <button type="submit" disabled={loading} className="btn" style={{ padding: '14px', justifyContent: 'center', marginTop: '8px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none' }}>
@@ -75,6 +93,7 @@ const Register = ({ onSwitchToLogin }) => {
             {!loading && <ArrowRight size={20} />}
           </button>
         </form>
+        )}
 
         <p style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-secondary)' }}>
           ¿Ya tienes una cuenta?{' '}
