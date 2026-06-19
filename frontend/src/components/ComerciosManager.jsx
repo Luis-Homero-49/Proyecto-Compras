@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Store, Plus, Edit2, Trash2, Check, X, Eye, EyeOff, MapPin, Phone, Mail, AtSign, ChevronDown, ChevronUp, ArrowLeft } from 'lucide-react';
+import { Store, Plus, Edit2, Trash2, Check, X, Eye, EyeOff, MapPin, Phone, Mail, AtSign, ChevronDown, ChevronUp, ArrowLeft, Tag } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { API_URL } from '../config';
 
@@ -47,6 +47,7 @@ const ComerciosManager = ({ onReturn }) => {
   const [newComercioPhones, setNewComercioPhones] = useState([]);
   const [newComercioEmails, setNewComercioEmails] = useState([]);
   const [newComercioSocial, setNewComercioSocial] = useState([]);
+  const [newComercioLine, setNewComercioLine] = useState('');
 
   // Editing Comercio State
   const [editingComercio, setEditingComercio] = useState(null);
@@ -55,6 +56,7 @@ const ComerciosManager = ({ onReturn }) => {
   const [editComercioPhones, setEditComercioPhones] = useState([]);
   const [editComercioEmails, setEditComercioEmails] = useState([]);
   const [editComercioSocial, setEditComercioSocial] = useState([]);
+  const [editComercioLine, setEditComercioLine] = useState('');
 
   const fetchComercios = async () => {
     try {
@@ -89,6 +91,7 @@ const ComerciosManager = ({ onReturn }) => {
         body: JSON.stringify({ 
           name: newComercioName.trim(),
           address: newComercioAddress.trim() || undefined,
+          business_line: newComercioLine.trim() || undefined,
           phones: newComercioPhones.filter(p => p.trim()),
           emails: newComercioEmails.filter(em => em.trim()),
           social_media: newComercioSocial.filter(sm => sm.trim())
@@ -100,6 +103,7 @@ const ComerciosManager = ({ onReturn }) => {
         setNewComercioPhones([]);
         setNewComercioEmails([]);
         setNewComercioSocial([]);
+        setNewComercioLine('');
         setIsAddingMode(false);
         fetchComercios();
       }
@@ -117,6 +121,7 @@ const ComerciosManager = ({ onReturn }) => {
         body: JSON.stringify({ 
           name: editComercioName.trim(),
           address: editComercioAddress.trim() || null,
+          business_line: editComercioLine.trim() || null,
           phones: editComercioPhones.filter(p => p.trim()),
           emails: editComercioEmails.filter(em => em.trim()),
           social_media: editComercioSocial.filter(sm => sm.trim())
@@ -162,6 +167,7 @@ const ComerciosManager = ({ onReturn }) => {
     setEditComercioPhones(comercio.phones || []);
     setEditComercioEmails(comercio.emails || []);
     setEditComercioSocial(comercio.social_media || []);
+    setEditComercioLine(comercio.business_line || '');
   };
 
   return (
@@ -198,21 +204,39 @@ const ComerciosManager = ({ onReturn }) => {
               placeholder="Ej. Supermercado Central"
               className="input"
               required
+              autoFocus
             />
           </div>
 
-          <div>
-            <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Dirección (Opcional)</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <MapPin size={18} style={{ alignSelf: 'center', color: 'var(--text-secondary)' }} />
-              <input 
-                type="text" 
-                value={newComercioAddress}
-                onChange={(e) => setNewComercioAddress(e.target.value)}
-                placeholder="Ubicación física"
-                className="input"
-                style={{ flex: 1 }}
-              />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+            <div>
+              <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Línea Comercial / Tipo</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <Tag size={18} style={{ alignSelf: 'center', color: 'var(--text-secondary)' }} />
+                <input 
+                  type="text" 
+                  value={newComercioLine}
+                  onChange={(e) => setNewComercioLine(e.target.value)}
+                  placeholder="Ej. Farmacia, Ferretería..."
+                  className="input"
+                  style={{ flex: 1 }}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Dirección (Opcional)</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <MapPin size={18} style={{ alignSelf: 'center', color: 'var(--text-secondary)' }} />
+                <input 
+                  type="text" 
+                  value={newComercioAddress}
+                  onChange={(e) => setNewComercioAddress(e.target.value)}
+                  placeholder="Ubicación física"
+                  className="input"
+                  style={{ flex: 1 }}
+                />
+              </div>
             </div>
           </div>
 
@@ -261,9 +285,15 @@ const ComerciosManager = ({ onReturn }) => {
                     <input type="text" value={editComercioName} onChange={(e)=>setEditComercioName(e.target.value)} className="input" />
                   </div>
 
-                  <div>
-                    <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Dirección</label>
-                    <input type="text" value={editComercioAddress} onChange={(e)=>setEditComercioAddress(e.target.value)} className="input" />
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                    <div>
+                      <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Línea Comercial</label>
+                      <input type="text" value={editComercioLine} onChange={(e)=>setEditComercioLine(e.target.value)} className="input" placeholder="Ej. Farmacia" />
+                    </div>
+                    <div>
+                      <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Dirección</label>
+                      <input type="text" value={editComercioAddress} onChange={(e)=>setEditComercioAddress(e.target.value)} className="input" />
+                    </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
@@ -290,7 +320,10 @@ const ComerciosManager = ({ onReturn }) => {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <Store size={20} style={{ color: 'var(--text-secondary)' }} />
-                      <span style={{ fontWeight: '600', fontSize: '1.1rem' }}>{comercio.name}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontWeight: '600', fontSize: '1.1rem' }}>{comercio.name}</span>
+                        {comercio.business_line && <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{comercio.business_line}</span>}
+                      </div>
                       {(!comercio.address && (!comercio.phones || comercio.phones.length === 0) && (!comercio.emails || comercio.emails.length === 0) && (!comercio.social_media || comercio.social_media.length === 0)) ? null : (
                         <span style={{ fontSize: '0.8rem', background: 'var(--accent-primary)', color: 'white', padding: '2px 6px', borderRadius: '12px' }}>Info extra</span>
                       )}

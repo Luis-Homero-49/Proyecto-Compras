@@ -98,6 +98,7 @@ const createTables = async () => {
     ALTER TABLE comercios ADD COLUMN IF NOT EXISTS phones JSONB DEFAULT '[]'::jsonb;
     ALTER TABLE comercios ADD COLUMN IF NOT EXISTS emails JSONB DEFAULT '[]'::jsonb;
     ALTER TABLE comercios ADD COLUMN IF NOT EXISTS social_media JSONB DEFAULT '[]'::jsonb;
+    ALTER TABLE comercios ADD COLUMN IF NOT EXISTS business_line VARCHAR(100);
 
     CREATE TABLE IF NOT EXISTS shopping_list_items (
       id SERIAL PRIMARY KEY,

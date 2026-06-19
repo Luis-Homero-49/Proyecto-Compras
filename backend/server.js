@@ -352,15 +352,15 @@ app.get('/api/comercios', async (req, res) => {
 });
 
 app.post('/api/comercios', async (req, res) => {
-  const { name, address, phones, emails, social_media } = req.body;
+  const { name, address, phones, emails, social_media, business_line } = req.body;
   try {
     const pPhones = phones ? JSON.stringify(phones) : '[]';
     const pEmails = emails ? JSON.stringify(emails) : '[]';
     const pSocialMedia = social_media ? JSON.stringify(social_media) : '[]';
 
     const { rows } = await db.query(
-      'INSERT INTO comercios (user_id, name, address, phones, emails, social_media) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [req.user.id, name, address || null, pPhones, pEmails, pSocialMedia]
+      'INSERT INTO comercios (user_id, name, address, phones, emails, social_media, business_line) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [req.user.id, name, address || null, pPhones, pEmails, pSocialMedia, business_line || null]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -370,12 +370,13 @@ app.post('/api/comercios', async (req, res) => {
 
 app.put('/api/comercios/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, is_active, address, phones, emails, social_media } = req.body;
+  const { name, is_active, address, phones, emails, social_media, business_line } = req.body;
   
   const pAddress = address !== undefined ? address : null;
   const pPhones = phones !== undefined ? JSON.stringify(phones) : null;
   const pEmails = emails !== undefined ? JSON.stringify(emails) : null;
   const pSocialMedia = social_media !== undefined ? JSON.stringify(social_media) : null;
+  const pBusinessLine = business_line !== undefined ? business_line : null;
 
   try {
     const { rows } = await db.query(
@@ -385,9 +386,10 @@ app.put('/api/comercios/:id', async (req, res) => {
            address = COALESCE($3, address),
            phones = COALESCE($4, phones),
            emails = COALESCE($5, emails),
-           social_media = COALESCE($6, social_media)
-       WHERE user_id = $7 AND id = $8 RETURNING *`,
-      [name, is_active, pAddress, pPhones, pEmails, pSocialMedia, req.user.id, id]
+           social_media = COALESCE($6, social_media),
+           business_line = COALESCE($7, business_line)
+       WHERE user_id = $8 AND id = $9 RETURNING *`,
+      [name, is_active, pAddress, pPhones, pEmails, pSocialMedia, pBusinessLine, req.user.id, id]
     );
     res.json(rows[0]);
   } catch (err) {
