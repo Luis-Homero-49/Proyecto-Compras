@@ -5,19 +5,9 @@ const LandingLayout = ({ children }) => {
   const [showPlans, setShowPlans] = useState(false);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div className="landing-container">
       {/* Left Side: Background & Description */}
-      <div style={{
-        flex: 1,
-        position: 'relative',
-        background: 'url(/bg-supermarket.png) center/cover no-repeat',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '40px',
-        color: 'white',
-      }}>
+      <div className="landing-left">
         {/* Dark Overlay */}
         <div style={{
           position: 'absolute',
@@ -54,16 +44,7 @@ const LandingLayout = ({ children }) => {
       </div>
 
       {/* Right Side: Auth Forms */}
-      <div style={{
-        width: '380px',
-        backgroundColor: 'var(--bg-primary)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: '30px',
-        boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
-        overflowY: 'auto'
-      }}>
+      <div className="landing-right">
         {children}
       </div>
 
