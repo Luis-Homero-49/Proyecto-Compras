@@ -60,8 +60,11 @@ const Register = ({ onSwitchToLogin, planType }) => {
             Plan seleccionado: {planType.toUpperCase()}
           </div>
         ) : (
-          <div style={{ padding: '16px', backgroundColor: '#fffbeb', color: '#b45309', borderRadius: '8px', marginBottom: '24px', textAlign: 'center', border: '1px solid #fde68a' }}>
-            <strong>Atención:</strong> Para registrarte, primero debes hacer clic en <strong>"Ver Planes de Uso"</strong> en la pantalla principal y elegir un plan.
+          <div style={{ padding: '16px', backgroundColor: '#fffbeb', color: '#b45309', borderRadius: '8px', marginBottom: '24px', textAlign: 'center', border: '1px solid #fde68a', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <span><strong>Atención:</strong> Para registrarte, primero debes hacer clic en <strong>"Ver Planes de Uso"</strong> en la pantalla principal y elegir un plan.</span>
+            <button onClick={() => window.location.reload()} className="btn btn-primary" style={{ alignSelf: 'center', backgroundColor: '#d97706', border: 'none' }}>
+              Volver al inicio
+            </button>
           </div>
         )}
 
