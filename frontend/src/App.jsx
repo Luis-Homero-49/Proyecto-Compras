@@ -150,14 +150,15 @@ function AppContent() {
   const { token, user } = useContext(AuthContext);
   const [view, setView] = useState('login'); // 'login', 'register', 'forgot', 'reset'
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [showPlans, setShowPlans] = useState(false);
 
   if (!token) {
-    if (view === 'register') return <LandingLayout onPlanSelected={(p) => { setSelectedPlan(p); setView('register'); }}><Register planType={selectedPlan} onSwitchToLogin={() => setView('login')} /></LandingLayout>;
+    if (view === 'register') return <LandingLayout showPlans={showPlans} setShowPlans={setShowPlans} onPlanSelected={(p) => { setSelectedPlan(p); setView('register'); setShowPlans(false); }}><Register planType={selectedPlan} onShowPlans={() => setShowPlans(true)} onSwitchToLogin={() => setView('login')} /></LandingLayout>;
     if (view === 'forgot') return <LandingLayout><ForgotPassword onSwitchToLogin={() => setView('login')} /></LandingLayout>;
     if (view === 'reset') return <LandingLayout><ResetPassword onSwitchToLogin={() => setView('login')} /></LandingLayout>;
     
     return (
-      <LandingLayout onPlanSelected={(p) => { setSelectedPlan(p); setView('register'); }}>
+      <LandingLayout showPlans={showPlans} setShowPlans={setShowPlans} onPlanSelected={(p) => { setSelectedPlan(p); setView('register'); setShowPlans(false); }}>
         <Login 
           onSwitchToRegister={() => setView('register')} 
           onSwitchToForgot={() => setView('forgot')} 

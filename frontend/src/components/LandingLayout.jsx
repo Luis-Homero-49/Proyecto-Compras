@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Check, X } from 'lucide-react';
 
-const LandingLayout = ({ children, onPlanSelected }) => {
-  const [showPlans, setShowPlans] = useState(false);
+const LandingLayout = ({ children, onPlanSelected, showPlans: externalShowPlans, setShowPlans: externalSetShowPlans }) => {
+  const [localShowPlans, setLocalShowPlans] = useState(false);
+  
+  const showPlans = externalShowPlans !== undefined ? externalShowPlans : localShowPlans;
+  const setShowPlans = externalSetShowPlans !== undefined ? externalSetShowPlans : setLocalShowPlans;
 
   return (
     <div className="landing-container">

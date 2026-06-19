@@ -1,18 +1,34 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { UserPlus, Mail, Lock, ArrowRight } from 'lucide-react';
+import { UserPlus, Mail, Lock, ArrowRight, List } from 'lucide-react';
 import { API_URL } from '../config';
 
-const Register = ({ onSwitchToLogin, planType }) => {
+const Register = ({ onSwitchToLogin, planType, onShowPlans }) => {
   const { login } = useContext(AuthContext);
   const [alias, setAlias] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isAwaitingPlan, setIsAwaitingPlan] = useState(false);
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    if (isAwaitingPlan && planType) {
+      submitRegistration();
+    }
+  }, [planType, isAwaitingPlan]);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
+    if (!planType) {
+      setIsAwaitingPlan(true);
+      if (onShowPlans) onShowPlans();
+      return;
+    }
+    submitRegistration();
+  };
+
+  const submitRegistration = async () => {
     setError('');
     setLoading(true);
 
@@ -55,21 +71,13 @@ const Register = ({ onSwitchToLogin, planType }) => {
         </div>
 
         {error && <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '8px', marginBottom: '24px', textAlign: 'center' }}>{error}</div>}
-        {planType ? (
+        {planType && (
           <div style={{ padding: '8px', backgroundColor: '#e0f2fe', color: '#0284c7', borderRadius: '8px', marginBottom: '16px', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold' }}>
             Plan seleccionado: {planType.toUpperCase()}
           </div>
-        ) : (
-          <div style={{ padding: '16px', backgroundColor: '#fffbeb', color: '#b45309', borderRadius: '8px', marginBottom: '24px', textAlign: 'center', border: '1px solid #fde68a', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <span><strong>Atención:</strong> Para registrarte, primero debes hacer clic en <strong>"Ver Planes de Uso"</strong> en la pantalla principal y elegir un plan.</span>
-            <button onClick={() => window.location.reload()} className="btn btn-primary" style={{ alignSelf: 'center', backgroundColor: '#d97706', border: 'none' }}>
-              Volver al inicio
-            </button>
-          </div>
         )}
 
-        {planType && (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
             <label className="input-label" style={{ marginBottom: '8px', display: 'block' }}>Nombre o Alias</label>
             <div style={{ position: 'relative' }}>
@@ -91,12 +99,11 @@ const Register = ({ onSwitchToLogin, planType }) => {
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input-field" style={{ paddingLeft: '40px' }} placeholder="Mínimo 6 caracteres" minLength="6" />
             </div>
           </div>
-          <button type="submit" disabled={loading} className="btn" style={{ padding: '14px', justifyContent: 'center', marginTop: '8px', backgroundColor: 'var(--success-color)', color: 'white', border: 'none' }}>
-            {loading ? 'Registrando...' : 'Registrarme'}
-            {!loading && <ArrowRight size={20} />}
+          <button type="submit" disabled={loading} className="btn" style={{ padding: '14px', justifyContent: 'center', marginTop: '8px', backgroundColor: planType ? 'var(--success-color)' : 'var(--accent-primary)', color: 'white', border: 'none' }}>
+            {loading ? 'Registrando...' : (planType ? 'Registrarme' : 'Siguiente: Elegir Plan')}
+            {!loading && (planType ? <ArrowRight size={20} /> : <List size={20} />)}
           </button>
         </form>
-        )}
 
         <p style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-secondary)' }}>
           ¿Ya tienes una cuenta?{' '}
